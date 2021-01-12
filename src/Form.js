@@ -1,18 +1,22 @@
 import React, { Component } from 'react';
 
 
-const handleChange = event => {
+class Form extends Component {
+  initialState = {
+    name: '',
+    job: '',
+  };
+ handleChange = event => {
   const { name, value } = event.target
 
   this.setState({
     [name]: value,
   })
 }
-class Form extends Component {
-  initialState = {
-    name: '',
-    job: '',
-  };
+ submitForm = () => {
+  this.props.handleSubmit(this.state)
+  this.setState(this.initialState)
+}
 
   state = this.initialState;
 render() {
@@ -34,7 +38,10 @@ render() {
         id="job"
         value={job}
         onChange={this.handleChange} />
+        <input type="button" value="Submit" onClick={this.submitForm} />
+
     </form>
+      
   );
 }
 }

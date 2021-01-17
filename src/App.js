@@ -8,19 +8,26 @@ class App extends Component {
 	state = {
 		characters: []
 	};
-removeCharacter = index => {
-  const { characters } = this.state
 
-  this.setState({
-    characters: characters.filter((character, i) => {
-      return i !== index
-    }),
-  })
-}
+  removeCharacter = index => {
+    const { characters } = this.state;
+    
+    this.setState({
+      characters: characters.filter((character, i) => {
+        if (i !== index){
+            //console.log(character);
+            return true;
+        }
+        else if (i === index)
+            this.makeDeleteCall(character);
+      }),
+    });
+  }
+
 handleSubmit = character => {
    this.makePostCall(character).then( callResult => {
-      if (callResult === true) {
-         this.setState({ characters: [...this.state.characters, character] });
+      if (callResult.status === 201) {
+         this.setState({ characters: [...this.state.characters, callResult.data] });
       }
    });
  }
@@ -41,7 +48,8 @@ makePostCall(character){
    return axios.post('http://localhost:5000/users', character)
     .then(function (response) {
       console.log(response);
-      return (response.status === 200);
+      if (response.status === 201)
+          return response;
     })
     .catch(function (error) {
       console.log(error);
@@ -49,6 +57,18 @@ makePostCall(character){
     });
  }
 
+makeDeleteCall(character){
+   return axios.delete(`http://localhost:5000/users/${character.id}`)
+    .then(function (response) {
+      console.log(response);
+      if (response.status === 202)
+          return response;
+    })
+    .catch(function (error) {
+      console.log(error);
+      return false;
+    });
+ }
 render() {
 	const { characters } = this.state;
 	
